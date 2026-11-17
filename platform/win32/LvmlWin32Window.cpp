@@ -160,6 +160,12 @@ LRESULT CALLBACK CLvmlWin32Window::SubclassProc(HWND hwnd, UINT msg, WPARAM wp, 
         // Minimising reports 0×0: the driver would rebuild a zero-size frame buffer.
         if (wp == SIZE_MINIMIZED) return 0;
         s->m_redrawAll = true;
+        // Restoring reports the unchanged size; the driver would still swap in a fresh (black) frame
+        // buffer, and LVGL redraws only dirty areas into it. Same size → keep the buffer.
+        if (s->m_clientSize.exchange(LONG(lp)) == LONG(lp)) {
+            Wake();
+            return 0;
+        }
         [[fallthrough]];
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:

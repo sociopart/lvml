@@ -75,6 +75,7 @@ private:
     WNDPROC            m_original = nullptr;
     int                m_dpi = 96, m_width = 0, m_height = 0;
     int                m_captionHeight = 0, m_captionExclude = 0;
+    std::atomic<LONG>  m_clientSize{ 0 }; // MAKELONG(width, height) last given to the driver
     std::atomic<bool>  m_close{ false }, m_closePressed{ false }, m_redrawAll{ false };
     std::atomic<DWORD> m_lastInput{ 0 };
     std::atomic<int>   m_wheel{ 0 };
