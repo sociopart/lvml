@@ -13,6 +13,7 @@
 
 // LVGL runtime
 #include "LvmlContext.hpp"
+#include "LvmlCursor.hpp"
 #include "LvmlDirectoryResources.hpp"
 #include "LvmlEvent.hpp"
 #include "LvmlFileSystem.hpp"

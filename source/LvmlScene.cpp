@@ -1,5 +1,6 @@
 #include "LvmlScene.hpp"
 #include "LvmlContext.hpp"
+#include "LvmlCursor.hpp"
 #include "LvmlFileSystem.hpp"
 #include "LvssParser.hpp"
 #include "LvssValue.hpp"
@@ -167,6 +168,7 @@ void CLvmlScene::OnDeleted(lv_event_t* e)
 {
     auto* scene = static_cast<CLvmlScene*>(lv_event_get_user_data(e));
     auto* obj   = static_cast<lv_obj_t*>(lv_event_get_current_target(e));
+    CLvmlCursor::Clear(obj);
     if (!scene) return;
     const auto it = scene->m_objects.find(obj);
     if (it != scene->m_objects.end()) {
@@ -420,6 +422,13 @@ void CLvmlScene::ApplyObjectProperties(SObject& o, const std::map<std::string, s
     if (get("pointer-events") == "none") clickable = false;
     if (clickable) lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
     else lv_obj_remove_flag(obj, LV_OBJ_FLAG_CLICKABLE);
+
+    // mouse cursor (shown by the platform host)
+    CLvmlCursor::ECursor cursor = CLvmlCursor::ECursor::Default;
+    if (const std::string c = get("cursor"); !c.empty() && CLvmlCursor::Parse(c, cursor) && cursor != CLvmlCursor::ECursor::Default)
+        CLvmlCursor::Set(obj, cursor);
+    else
+        CLvmlCursor::Clear(obj);
 
     if (const auto it = decls.find("line-height"); it != decls.end()) ApplyLineHeight(o, it->second);
 }

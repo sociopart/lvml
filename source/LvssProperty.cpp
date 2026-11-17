@@ -217,12 +217,12 @@ const size_t CLvssProperty::kEntryCount = sizeof(kEntries) / sizeof(kEntries[0])
 
 CLvssProperty::EKind CLvssProperty::Classify(std::string_view name)
 {
-    static const char* kObject[] = { "display", "overflow", "overflow-x", "overflow-y", "scrollbar-mode",
+    static const char* kObject[] = { "cursor", "display", "overflow", "overflow-x", "overflow-y", "scrollbar-mode",
                                      "image-fit", "object-fit", "long-mode", "text-overflow", "position",
                                      "pointer-events", "line-height", "scroll-snap-x", "scroll-snap-y",
                                      "white-space", "inner-align", "image-align" };
     static const char* kFont[] = { "font", "font-family", "font-size" };
-    static const char* kIgnored[] = { "cursor", "user-select", "box-sizing", "font-weight", "font-style",
+    static const char* kIgnored[] = { "user-select", "box-sizing", "font-weight", "font-style",
                                       "z-index", "will-change", "content", "outline-style", "border-style",
                                       "list-style", "list-style-type", "text-transform", "vertical-align",
                                       "resize", "appearance", "-webkit-appearance", "-webkit-user-select",

@@ -23,7 +23,7 @@ bool CCssConverter::IsPassThrough(const std::string& p)
         "font", "font-family", "font-size",
         "flex", "flex-direction", "flex-wrap", "flex-flow", "flex-grow", "justify-content", "align-items",
         "align-content", "place-content", "place-items",
-        "overflow", "overflow-x", "overflow-y", "pointer-events", "object-fit",
+        "overflow", "overflow-x", "overflow-y", "pointer-events", "object-fit", "cursor",
     };
     for (const char* n : kNames) if (p == n) return true;
     return false;
@@ -31,7 +31,7 @@ bool CCssConverter::IsPassThrough(const std::string& p)
 
 bool CCssConverter::IsSilentDrop(const std::string& p)
 {
-    static const char* kNames[] = { "cursor", "user-select", "box-sizing", "font-weight", "font-style", "outline-style",
+    static const char* kNames[] = { "user-select", "box-sizing", "font-weight", "font-style", "outline-style",
                                     "border-style", "list-style", "list-style-type", "resize", "appearance",
                                     "text-rendering", "will-change", "content", "isolation", "touch-action",
                                     "scroll-behavior", "overscroll-behavior", "font-feature-settings", "caret-color",

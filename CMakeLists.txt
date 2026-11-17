@@ -64,6 +64,7 @@ if(LVML_BUILD_RUNTIME)
         source/LvmlScene.cpp
         source/LvmlBuilder.cpp
         source/LvmlContext.cpp
+        source/LvmlCursor.cpp
     )
     target_link_libraries(lvml PUBLIC lvml_core lvgl)
     if(WIN32 AND LVML_BUILD_WIN32_HOST)

@@ -6,7 +6,8 @@
 CLvmlWin32Window* CLvmlWin32Window::s_self      = nullptr;
 HANDLE            CLvmlWin32Window::s_wakeEvent = nullptr;
 
-static constexpr UINT kLvmlShowMessage = WM_APP + 0x4C;
+static constexpr UINT kLvmlShowMessage   = WM_APP + 0x4C;
+static constexpr UINT kLvmlCursorMessage = WM_APP + 0x4D;
 
 CLvmlWin32Window::~CLvmlWin32Window()
 {
@@ -135,6 +136,20 @@ LRESULT CALLBACK CLvmlWin32Window::SubclassProc(HWND hwnd, UINT msg, WPARAM wp, 
         if (p.y >= 0 && p.y < s->Px(s->m_captionHeight) && p.x < rc.right - s->Px(s->m_captionExclude)) return HTCAPTION;
         return HTCLIENT;
     }
+    case WM_SETCURSOR:
+        if (LOWORD(lp) == HTCLIENT) {
+            SetCursor(LoadCursorW(nullptr, CursorId(CLvmlCursor::ECursor(s->m_cursor.load()))));
+            return TRUE;
+        }
+        return CallWindowProcW(s->m_original, hwnd, msg, wp, lp);
+    case kLvmlCursorMessage: {
+        // Pump() found a different cursor under the pointer: apply it now if the pointer is in the client area.
+        POINT p;
+        GetCursorPos(&p);
+        if (WindowFromPoint(p) == hwnd && SendMessageW(hwnd, WM_NCHITTEST, 0, MAKELPARAM(p.x, p.y)) == HTCLIENT)
+            SetCursor(LoadCursorW(nullptr, CursorId(CLvmlCursor::ECursor(s->m_cursor.load()))));
+        return 0;
+    }
     case WM_CLOSE:
         s->m_closePressed = true;
         Wake();
@@ -232,6 +247,33 @@ void CLvmlWin32Window::ScrollAt(POINT p, int delta)
     lv_anim_start(&a);
 }
 
+LPCWSTR CLvmlWin32Window::CursorId(CLvmlCursor::ECursor cursor)
+{
+    // Numeric ids: IDC_* expand to narrow strings when UNICODE is not defined.
+    switch (cursor) {
+    case CLvmlCursor::ECursor::Pointer:    return MAKEINTRESOURCEW(32649); // IDC_HAND
+    case CLvmlCursor::ECursor::Text:       return MAKEINTRESOURCEW(32513); // IDC_IBEAM
+    case CLvmlCursor::ECursor::Move:       return MAKEINTRESOURCEW(32646); // IDC_SIZEALL
+    case CLvmlCursor::ECursor::NotAllowed: return MAKEINTRESOURCEW(32648); // IDC_NO
+    case CLvmlCursor::ECursor::Wait:       return MAKEINTRESOURCEW(32514); // IDC_WAIT
+    case CLvmlCursor::ECursor::Progress:   return MAKEINTRESOURCEW(32650); // IDC_APPSTARTING
+    case CLvmlCursor::ECursor::Crosshair:  return MAKEINTRESOURCEW(32515); // IDC_CROSS
+    case CLvmlCursor::ECursor::Help:       return MAKEINTRESOURCEW(32651); // IDC_HELP
+    default:                               return MAKEINTRESOURCEW(32512); // IDC_ARROW
+    }
+}
+
+void CLvmlWin32Window::UpdateCursor()
+{
+    // The clickable object under the pointer (the same one LVGL hovers), top layer first.
+    lv_point_t p;
+    lv_indev_get_point(m_pointer, &p);
+    lv_obj_t* obj = lv_indev_search_obj(lv_layer_top(), &p);
+    if (!obj) obj = lv_indev_search_obj(lv_screen_active(), &p);
+    const int cursor = int(CLvmlCursor::Resolve(obj));
+    if (m_cursor.exchange(cursor) != cursor) PostMessageW(m_hwnd, kLvmlCursorMessage, 0, 0);
+}
+
 void CLvmlWin32Window::Pump()
 {
     if (m_redrawAll.exchange(false)) {
@@ -239,6 +281,7 @@ void CLvmlWin32Window::Pump()
         lv_obj_invalidate(lv_layer_top());
     }
     if (const int d = m_wheel.exchange(0)) ScrollAt(POINT{ m_wheelX, m_wheelY }, d);
+    if (!m_pointerPaused) UpdateCursor();
 
     // Poll the mouse only while it is used; pause the input timer when idle.
     lv_timer_t* t = lv_indev_get_read_timer(m_pointer);

@@ -5,6 +5,7 @@
 #endif
 #include <windows.h>
 #include <lvgl.h>
+#include "LvmlCursor.hpp"
 #include <atomic>
 
 // Frameless LVGL window: caption drag area, mouse-wheel scrolling of the scrollable object under
@@ -65,6 +66,8 @@ private:
     static void             AnimScroll(void* obj, int32_t y);
     void                    ScrollAt(POINT p, int delta);
     int                     Px(int logical) const { return MulDiv(logical, m_dpi, 96); }
+    void                    UpdateCursor();
+    static LPCWSTR          CursorId(CLvmlCursor::ECursor cursor);
 
     static CLvmlWin32Window* s_self;
     static HANDLE            s_wakeEvent;
@@ -75,6 +78,7 @@ private:
     WNDPROC            m_original = nullptr;
     int                m_dpi = 96, m_width = 0, m_height = 0;
     int                m_captionHeight = 0, m_captionExclude = 0;
+    std::atomic<int>   m_cursor{ 0 };     // CLvmlCursor::ECursor under the pointer, set by Pump()
     std::atomic<LONG>  m_clientSize{ 0 }; // MAKELONG(width, height) last given to the driver
     std::atomic<bool>  m_close{ false }, m_closePressed{ false }, m_redrawAll{ false };
     std::atomic<DWORD> m_lastInput{ 0 };

@@ -99,7 +99,7 @@ scene->AddClass("row", "active");              // перестилизация �
 | рамка, тень | `border`, `border-width/color/opa/side`, `border-top/bottom/left/right`, `border-radius`/`radius` (`50%` → круг), `outline*`, `box-shadow`, `shadow-*`, `clip-corner` |
 | текст | `color`/`text-color`, `font` / `font-family` / `font-size` (наследуются), `text-align`, `letter-spacing`, `line-height`, `line-space`, `text-decoration`, `text-overflow`/`long-mode` (`ellipsis`, `scroll`, `clip`) |
 | картинки | `image-fit`/`object-fit` (`stretch`/`fill`, `contain`, `cover`, `tile`, `center`), `image-recolor`/`image-color`, `image-recolor-opa`, `image-opa` |
-| прочее | `opacity`/`opa`, `visibility`, `recolor`, `blend-mode`, `transition` (`<props> <time> <easing> <delay>`, `all`), `display` (`none`, `flex`), `layout`, `flex-flow`, `flex-direction`, `flex-wrap`, `justify-content`, `align-items`, `align-content`, `flex-grow`, `flex`, `overflow(-x/-y)`, `scrollbar-mode`, `position: absolute` (вне flex-потока), `pointer-events: none` |
+| прочее | `opacity`/`opa`, `visibility`, `recolor`, `blend-mode`, `transition` (`<props> <time> <easing> <delay>`, `all`), `display` (`none`, `flex`), `layout`, `flex-flow`, `flex-direction`, `flex-wrap`, `justify-content`, `align-items`, `align-content`, `flex-grow`, `flex`, `overflow(-x/-y)`, `scrollbar-mode`, `position: absolute` (вне flex-потока), `pointer-events: none`, `cursor` (`pointer`, `text`, `move`, `not-allowed`… — показывает хост окна, напр. `CLvmlWin32Window`) |
 
 Неизвестное свойство или значение — предупреждение через `CLvmlContext::SetLogger()`.
 
